@@ -4,6 +4,7 @@
 import {Pressable, ScrollView, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import moment from 'moment';
+import {useNavigation} from '@react-navigation/native';
 
 const HomeScreen = () => {
   const currentDate = moment();
@@ -11,6 +12,7 @@ const HomeScreen = () => {
   const [date, setDate] = useState('');
   const [nextDate, setNextDate] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const navigation = useNavigation();
 
   const renderWeekDates = startOfWeek => {
     let weekDates = [];
@@ -55,47 +57,71 @@ const HomeScreen = () => {
           </View>
 
           <Pressable
-            style={{
-              backgroundColor: 'white',
-              borderRadius: 8,
-              padding: 10,
-              width: '85%',
-              height: 80,
-            }}>
-            <Text>There is no menu</Text>
+            onPress={() =>
+              navigation.navigate('Menu', {
+                date: date.format('ddd') + ' ' + date.format('DD'),
+              })
+            }
+            style={[
+              {
+                backgroundColor: 'white',
+                borderRadius: 8,
+                padding: 10,
+                width: '85%',
+                height: 80,
+              },
+            ]}>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'gray',
+              }}>
+              There is no menu
+            </Text>
+
+            <Pressable style={{position: 'absolute', bottom: 5, right: 50}}>
+              <Text style={{fontSize: 10, fontWeight: '500', color: 'gray'}}>
+                Copy
+              </Text>
+            </Pressable>
+
+            <Pressable style={{position: 'absolute', bottom: 5, right: 10}}>
+              <Text style={{fontSize: 10, fontWeight: '500', color: 'gray'}}>
+                delete
+              </Text>
+            </Pressable>
           </Pressable>
         </View>,
       );
-
-      return weekDates;
     }
-
-    const renderWeeks = numWeeks => {
-      let weeks = [];
-      for (let i = 0; i < numWeeks; i++) {
-        weeks.push(
-          <View>
-            <Text>
-              {startOfWeek
-                .clone()
-                .add(i * 7, 'days')
-                .format('DD MMM')}
-            </Text>
-            <Text>
-              {renderWeekDates(startOfWeek.clone().add(i * 7, 'days'))}
-            </Text>
-          </View>,
-        );
-      }
-      return weeks;
-    };
-
-    return (
-      <ScrollView style={{marginTop: 50}}>
-        <View style={{flex: 1, padding: 12}}>{renderWeeks(3)}</View>
-      </ScrollView>
-    );
+    return weekDates;
   };
+
+  const renderWeeks = numWeeks => {
+    let weeks = [];
+    for (let i = 0; i < numWeeks; i++) {
+      weeks.push(
+        <View>
+          <Text>
+            {startOfWeek
+              .clone()
+              .add(i * 7, 'days')
+              .format('DD MMM')}
+          </Text>
+          {renderWeekDates(startOfWeek.clone().add(i * 7, 'days'))}
+        </View>,
+      );
+    }
+    return weeks;
+  };
+
+  return (
+    <ScrollView style={{marginTop: 50}}>
+      <View style={{flex: 1, padding: 12}}>{renderWeeks(3)}</View>
+    </ScrollView>
+  );
 };
 
 export default HomeScreen;
